@@ -1,0 +1,293 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TAVOLA EXPRESS – Frisch gekocht. International geliefert.</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#e8412c;--ink:#1d1d1f;--mut:#6b6b70}
+html,body{background:#eef0f0;color:var(--ink);font-family:Inter,"Helvetica Neue",Arial,sans-serif}
+#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0}
+#panel{position:fixed;left:24px;top:24px;bottom:24px;width:min(400px,34vw);background:#fff;border-radius:26px;box-shadow:0 20px 60px rgba(30,40,50,.14);z-index:5;padding:30px 32px;display:flex;flex-direction:column;transition:opacity .4s}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;font-size:15px}
+.logo i{width:30px;height:30px;border-radius:8px;background:var(--red);display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
+.chip{margin-top:auto;align-self:flex-start;font-size:12px;font-weight:700;background:#f3f4f5;border-radius:99px;padding:7px 12px;color:var(--mut)}
+.chip b{color:var(--red)}
+.step{font-size:12px;font-weight:800;color:var(--red);letter-spacing:.14em;margin-top:18px}
+h1{font-size:clamp(26px,2.6vw,40px);line-height:1.05;letter-spacing:-.02em;margin:10px 0 14px;font-weight:850}
+p.body{color:var(--mut);font-size:15px;line-height:1.55;min-height:4.6em}
+.cta{margin-top:22px;align-self:flex-start;background:var(--red);color:#fff;border:0;border-radius:99px;padding:14px 22px;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(232,65,44,.35);text-decoration:none}
+nav.steps{display:flex;gap:6px;margin-top:24px;flex-wrap:wrap}
+nav.steps button{border:0;background:#f1f2f3;border-radius:10px;padding:8px 10px;font-weight:800;font-size:12px;color:var(--mut);cursor:pointer;transition:.3s}
+nav.steps button.on{background:var(--ink);color:#fff}
+.bar{height:3px;background:#eee;border-radius:3px;margin-top:14px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--red)}
+.fade{transition:opacity .35s,transform .35s}.fade.out{opacity:0;transform:translateY(8px)}
+#story{height:900vh;position:relative;z-index:1;pointer-events:none}
+#photo{position:relative;z-index:6;min-height:100vh;background:#111;overflow:hidden;display:flex;align-items:flex-end}
+#photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:translateX(100%)}
+#photo .cap{position:relative;color:#fff;padding:8vw 6vw;max-width:760px}
+#photo h2{font-size:clamp(36px,6vw,84px);line-height:.95;letter-spacing:-.03em;font-weight:900}
+#photo .cap p{margin-top:16px;font-size:18px;opacity:.85}
+#photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75),transparent 60%);pointer-events:none}
+#photo .cap{z-index:2}
+footer{position:relative;z-index:6;background:#fff;padding:40px 6vw;font-size:14px;color:var(--mut);display:flex;flex-wrap:wrap;gap:14px 40px;justify-content:space-between}
+footer b{color:var(--ink)}
+.label3d{position:fixed;z-index:3;pointer-events:none;transform:translate(-50%,-50%);font-weight:900;font-size:14px;color:#fff;background:var(--red);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.2);transition:opacity .3s}
+@media (max-width:820px){
+ #panel{left:12px;right:12px;top:auto;bottom:12px;width:auto;padding:18px 20px;border-radius:20px}
+ .chip{display:none} h1{font-size:24px;margin:6px 0 8px} p.body{font-size:13.5px;min-height:0}
+ .cta{margin-top:12px;padding:11px 18px} nav.steps{margin-top:12px} .step{margin-top:10px}
+}
+</style></head><body>
+<canvas id="gl"></canvas>
+<aside id="panel">
+ <div class="logo"><i>T</i>TAVOLA EXPRESS</div>
+ <div class="step fade" id="stp">01 / 06 · KÜCHE</div>
+ <h1 class="fade" id="ttl">Frisch gekocht in Berlin.</h1>
+ <p class="body fade" id="txt"></p>
+ <a class="cta" href="#photo">Jetzt bestellen</a>
+ <nav class="steps" id="nav"></nav>
+ <div class="bar"><i id="bar"></i></div>
+ <div class="chip" id="chip">Route: <b>Deutschland</b> → Nederland</div>
+</aside>
+<div id="story"></div>
+<section id="photo"><img src="img/meal.jpg" alt="Frische Pasta mit Tomaten und Basilikum"><div class="cap"><h2>Noch dampfend.<br>Auf deinem Tisch.</h2><p>Von unserer Küche in Berlin bis zu deiner Haustür in Amsterdam – in unter 24 Stunden.</p></div></section>
+<footer><div><b>TAVOLA EXPRESS</b> · fiktive Marke · Unverbindlicher Konzept-Entwurf (kein Kundenprojekt)</div><div>Alle Texte, Preise und Lieferzeiten sind Platzhalter. Foto: Pexels (freie Lizenz).</div><div>Konzept &amp; Umsetzung: <b>Mohammad, 015738338427</b></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+const STEPS=[
+ ["KÜCHE","Frisch gekocht in Berlin.","Unser Küchenteam bereitet jedes Gericht à la minute zu – mit Zutaten vom Markt, ohne Tiefkühlware."],
+ ["VERPACKUNG","Versiegelt in der Thermobox.","Die TAVOLA-Box hält dein Essen bis zu 30 Stunden auf perfekter Temperatur – recycelbar und auslaufsicher."],
+ ["STRASSE","In 3 Etappen zum Flughafen.","Unser Kühltransporter holt die Boxen ab: ① Küche, ② Sammelpunkt, ③ Cargo-Terminal – live verfolgbar."],
+ ["LUFTFRACHT","Über Grenzen hinweg.","Im TAVOLA-Cargo-Flieger geht es über das Meer – von Deutschland in die Niederlande, Österreich und weitere Länder."],
+ ["LETZTE MEILE","Mit dem Roller durch die Stadt.","Nach der Landung übernimmt unser Kurier – emissionsarm und schnell durch die Straßen deiner Stadt."],
+ ["DEIN TISCH","Serviert – noch dampfend.","Tür auf, Box auf, genießen. So schmeckt Berlin in Amsterdam, Wien oder Zürich."]];
+const B=[0,.15,.25,.45,.67,.85,1.0001];
+const nav=document.getElementById('nav');
+STEPS.forEach((s,i)=>{const b=document.createElement('button');b.textContent='0'+(i+1);b.onclick=()=>go((B[i]+B[i+1])/2-.03);nav.appendChild(b)});
+let curStep=-1;
+function setStep(i){if(i===curStep)return;curStep=i;const els=['stp','ttl','txt'].map(id=>document.getElementById(id));els.forEach(e=>e.classList.add('out'));
+ setTimeout(()=>{els[0].textContent=`0${i+1} / 06 · ${STEPS[i][0]}`;els[1].textContent=STEPS[i][1];els[2].textContent=STEPS[i][2];els.forEach(e=>e.classList.remove('out'))},curStep<0?0:220);
+ [...nav.children].forEach((b,k)=>b.classList.toggle('on',k===i));}
+// ---------- THREE ----------
+const cv=document.getElementById('gl');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
+const S=new THREE.Scene();S.background=new THREE.Color(0xeef0f0);S.fog=new THREE.Fog(0xeef0f0,160,260);
+const cam=new THREE.OrthographicCamera(-1,1,1,-1,-500,1000);
+S.add(new THREE.HemisphereLight(0xffffff,0xc9d4d6,1.25));
+const sun=new THREE.DirectionalLight(0xffffff,1.9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-45,right:45,top:45,bottom:-45,near:1,far:200});sun.shadow.bias=-.0005;sun.shadow.radius=4;S.add(sun,sun.target);
+const RED=0xe8412c;
+const M=c=>new THREE.MeshStandardMaterial({color:c,roughness:.85,metalness:0,flatShading:true});
+const mats={white:M(0xffffff),grey:M(0xd9dcdd),dark:M(0x3a3d42),red:M(RED),mint:M(0x9fe0c4),mint2:M(0x7fd0ae),trunk:M(0xb8a58f),road:M(0xbfc4c7),glass:M(0x9fc9e4),wood:M(0xd9b48a),skin:M(0xf0c8a4),gold:M(0xf4c35a)};
+function box(w,h,d,m,x=0,y=0,z=0,par=S){const g=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);g.position.set(x,y+h/2,z);g.castShadow=g.receiveShadow=true;par.add(g);return g}
+function cyl(rt,rb,h,m,x,y,z,par=S,seg=12){const g=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),m);g.position.set(x,y+h/2,z);g.castShadow=g.receiveShadow=true;par.add(g);return g}
+// ground
+const gnd=new THREE.Mesh(new THREE.PlaneGeometry(1200,400),M(0xf3f3f1));gnd.rotation.x=-Math.PI/2;gnd.receiveShadow=true;S.add(gnd);
+const sea=new THREE.Mesh(new THREE.PlaneGeometry(68,400),new THREE.MeshStandardMaterial({color:0xa9d8ef,roughness:.4}));sea.rotation.x=-Math.PI/2;sea.position.set(190,.05,0);sea.receiveShadow=true;S.add(sea);
+// shore edges
+[156,224].forEach(x=>box(1.2,.5,400,M(0xe4e6e3),x,0,0));
+for(let i=0;i<14;i++){const w=new THREE.Mesh(new THREE.BoxGeometry(4+Math.random()*4,.06,.35),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7}));w.position.set(162+Math.random()*56,.12,-40+Math.random()*80);S.add(w)}
+// trees
+function tree(x,z,s=1){const g=new THREE.Group();cyl(.15*s,.2*s,.8*s,mats.trunk,0,0,0,g,6);const c=new THREE.Mesh(new THREE.ConeGeometry(1*s,2.4*s,7),Math.random()<.5?mats.mint:mats.mint2);c.position.y=1.8*s;c.castShadow=true;g.add(c);g.position.set(x,0,z);S.add(g)}
+// ===== 1 RESTAURANT =====
+const rest=new THREE.Group();S.add(rest);
+const wallM=M(0xffffff);
+box(14,.3,10,M(0xe9e3da),0,0,0,rest);// floor
+box(14,4.2,.4,wallM,0,0,-5,rest);box(.4,4.2,10,wallM,-7,0,0,rest);
+box(14,1.2,.4,wallM,0,0,5,rest);box(.4,1.2,10,wallM,7,0,0,rest);// low front walls (cutaway)
+box(14,.5,.4,wallM,0,3.7,5,rest);box(.4,.5,10,wallM,7,3.7,0,rest);
+[-7,-2.3,2.3,7].forEach(x=>box(.4,4.2,.4,wallM,x,0,5,rest));[-5,0,5].forEach(z=>box(.4,4.2,.4,wallM,7,0,z,rest));
+const awn=box(14.6,.35,1.6,mats.red,0,3.5,5.9,rest);
+const roofM=new THREE.MeshStandardMaterial({color:RED,roughness:.8,transparent:true,flatShading:true});
+const roof=box(14.8,.6,10.8,roofM,0,4.2,0,rest);
+const roofTop=box(6,1.2,4,new THREE.MeshStandardMaterial({color:0xffffff,transparent:true}),-2,4.8,-1,rest);
+// kitchen
+box(8,1.1,1.4,mats.grey,-1,.3,-3.6,rest);box(2.4,1.2,1.4,mats.dark,4.2,.3,-3.6,rest);// stove
+cyl(.5,.5,.6,mats.dark,4,1.5,-3.6,rest);// pot
+box(5,1.1,1.6,mats.white,0,.3,.6,rest);// pass counter
+box(5,.15,1.8,mats.wood,0,1.4,.6,rest);
+for(let i=0;i<3;i++){cyl(.5,.5,.9,mats.wood,-4.5+i*0,.3,2.3+i*-0,rest);}
+// tables
+[[-4.5,2.8],[4.5,2.8]].forEach(([x,z])=>{cyl(1,1,.12,mats.white,x,1.1,z,rest,14);cyl(.12,.12,1,mats.dark,x,.3,z,rest,6);[-1.3,1.3].forEach(d=>box(.7,.9,.7,mats.red,x+d,.3,z,rest))});
+// chef
+const chef=new THREE.Group();rest.add(chef);chef.position.set(1.8,.3,-1.6);
+cyl(.5,.6,1.7,mats.white,0,0,0,chef);const hd=new THREE.Mesh(new THREE.SphereGeometry(.42,12,10),mats.skin);hd.position.y=2.1;hd.castShadow=true;chef.add(hd);
+cyl(.42,.36,.6,mats.white,0,2.4,0,chef);const hatT=new THREE.Mesh(new THREE.SphereGeometry(.5,10,8),mats.white);hatT.position.y=3.05;chef.add(hatT);
+const arm=box(.25,.25,1,mats.white,.45,1.25,.5,chef);
+// plate + meal (kitchen)
+const plate=new THREE.Group();rest.add(plate);plate.position.set(0,1.55,.6);
+cyl(.85,.6,.12,mats.white,0,0,0,plate,20);const pasta=new THREE.Mesh(new THREE.SphereGeometry(.55,10,6,0,Math.PI*2,0,Math.PI/2),M(0xf0c46a));pasta.scale.y=.6;pasta.position.y=.1;plate.add(pasta);
+for(let i=0;i<5;i++){const t=new THREE.Mesh(new THREE.SphereGeometry(.13,8,6),mats.red);t.position.set(Math.cos(i*1.3)*.35,.35,Math.sin(i*1.3)*.35);plate.add(t)}
+const basil=new THREE.Mesh(new THREE.SphereGeometry(.16,6,4),M(0x3f9a4c));basil.position.y=.45;basil.scale.set(1.4,.4,1);plate.add(basil);
+// sign on restaurant
+function textTex(t,bg,fg,w=512,h=128,fs=64){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');if(bg){x.fillStyle=bg;x.fillRect(0,0,w,h)}x.fillStyle=fg;x.font=`900 ${fs}px Helvetica,Arial,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText(t,w/2,h/2+2);const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;tx.anisotropy=8;return tx}
+const sign=new THREE.Mesh(new THREE.PlaneGeometry(6,1.2),new THREE.MeshBasicMaterial({map:textTex('TAVOLA','#e8412c','#fff'),transparent:true}));sign.position.set(0,4.45,6.75);rest.add(sign);
+// ===== BOX (the parcel) =====
+const parcel=new THREE.Group();S.add(parcel);
+const pb=box(1.3,1,1,mats.red,0,0,0,parcel);pb.position.y=.5;
+const strip=new THREE.Mesh(new THREE.PlaneGeometry(1.3,.5),new THREE.MeshBasicMaterial({map:textTex('TAVOLA',null,'#fff',256,96,54),transparent:true}));strip.position.set(0,.5,.51);parcel.add(strip);
+const lid=box(1.36,.12,1.06,mats.white,0,1,0,parcel);
+// ===== ROAD =====
+const road=new THREE.CatmullRomCurve3([[13,0,9],[24,0,13],[34,0,-6],[50,0,-10],[62,0,8],[78,0,14],[92,0,0],[106,0,-6]].map(a=>new THREE.Vector3(...a)));
+(function(){const N=300,pos=[],idx=[];for(let i=0;i<=N;i++){const t=i/N,p=road.getPointAt(t),tg=road.getTangentAt(t),n=new THREE.Vector3(-tg.z,0,tg.x).normalize().multiplyScalar(1.8);pos.push(p.x+n.x,.06,p.z+n.z,p.x-n.x,.06,p.z-n.z);if(i<N){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xc9ced1,side:THREE.DoubleSide}));m.receiveShadow=true;S.add(m);
+ for(let i=0;i<70;i++){const t=i/70,p=road.getPointAt(t),tg=road.getTangentAt(t);const d=new THREE.Mesh(new THREE.BoxGeometry(.9,.03,.15),mats.white);d.position.set(p.x,.1,p.z);d.rotation.y=Math.atan2(-tg.z,tg.x);S.add(d)}})();
+const WPT=[.18,.52,.86];const wpPins=WPT.map((t,i)=>{const p=road.getPointAt(t);const g=new THREE.Group();g.position.copy(p);S.add(g);cyl(.06,.06,3,mats.dark,0,0,0,g,6);
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:textTex(String(i+1),null,'#fff',128,128,80),color:0xffffff}));
+ const disc=new THREE.Sprite(new THREE.SpriteMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#e8412c';x.beginPath();x.arc(64,64,60,0,7);x.fill();x.fillStyle='#fff';x.font='900 72px Arial';x.textAlign='center';x.textBaseline='middle';x.fillText(i+1,64,68);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t})()}));
+ disc.scale.set(2.2,2.2,1);disc.position.y=3.8;g.add(disc);return disc});
+// van
+const van=new THREE.Group();S.add(van);
+box(3.6,1.8,1.8,mats.white,-.4,.4,0,van);box(1.3,1.3,1.8,mats.red,1.85,.4,0,van);box(.1,.6,1.5,mats.glass,2.5,1,0,van);
+box(3.62,.35,1.82,mats.red,-.4,1.2,0,van);
+[[-1.4,.95],[-1.4,-.95],[1.6,.95],[1.6,-.95]].forEach(([x,z])=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.3,12),mats.dark);w.rotation.x=Math.PI/2;w.position.set(x,.42,z);van.add(w)});
+// ===== AIRPORT =====
+box(46,.12,7,M(0xa9adb1),130,0,6);for(let i=0;i<14;i++)box(1.6,.03,.3,mats.white,110+i*3.2,.12,6);
+box(14,4,7,mats.white,118,0,-8);box(14,.6,7.4,mats.red,118,4,-8);box(13,2,.1,mats.glass,118,1.2,-4.45);
+cyl(.9,1.1,8,mats.white,133,0,-9);cyl(1.8,1.4,1.6,mats.glass,133,8,-9);box(3.8,.3,3.8,mats.red,133,9.6,-9);
+// second runway
+box(40,.12,7,M(0xa9adb1),248,0,6);for(let i=0;i<12;i++)box(1.6,.03,.3,mats.white,231+i*3.2,.12,6);
+box(10,3.5,6,mats.white,240,0,-8);box(10,.5,6.4,mats.red,240,3.5,-8);
+// plane
+const plane=new THREE.Group();S.add(plane);
+const fus=new THREE.Mesh(new THREE.CylinderGeometry(1,1,10,14),mats.red);fus.rotation.z=Math.PI/2;fus.castShadow=true;plane.add(fus);
+const nose=new THREE.Mesh(new THREE.SphereGeometry(1,14,10),mats.red);nose.scale.x=1.8;nose.position.x=5;nose.castShadow=true;plane.add(nose);
+const tl=new THREE.Mesh(new THREE.ConeGeometry(1,3,14),mats.red);tl.rotation.z=Math.PI/2;tl.position.x=-6.4;plane.add(tl);
+box(3,.18,14,mats.white,.4,-.3,0,plane).castShadow=true;box(1.6,.15,5,mats.white,-6.4,.1,0,plane);box(1.8,2.6,.15,mats.red,-6.6,.4,0,plane);
+box(1.4,.2,.1,mats.white,-6.6,2.2,0,plane);
+[-3.5,3.5].forEach(z=>cyl(.45,.45,1.6,mats.grey,1,-.9,z,plane).rotation.z=Math.PI/2);
+const pl=new THREE.Mesh(new THREE.PlaneGeometry(5,1),new THREE.MeshBasicMaterial({map:textTex('TAVOLA',null,'#fff',512,100,80),transparent:true}));pl.position.set(.5,.3,1.01);plane.add(pl);
+const gearG=new THREE.Group();plane.add(gearG);[[3,0],[-1,1.2],[-1,-1.2]].forEach(([x,z])=>cyl(.2,.2,.9,mats.dark,x,-1.9,z,gearG));
+// flight arc
+const arc=new THREE.QuadraticBezierCurve3(new THREE.Vector3(146,1.9,6),new THREE.Vector3(190,44,6),new THREE.Vector3(236,1.9,6));
+const dots=[];for(let i=0;i<=60;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(.28,8,6),new THREE.MeshBasicMaterial({color:RED,transparent:true}));d.position.copy(arc.getPointAt(i/60));S.add(d);dots.push(d)}
+// country labels
+function groundLabel(t,x,z,s=1){const m=new THREE.Mesh(new THREE.PlaneGeometry(26*s,4.5*s),new THREE.MeshBasicMaterial({map:textTex(t,null,'#b9bfc2',1024,180,130),transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.15,z);S.add(m);return m}
+groundLabel('DEUTSCHLAND',128,24);const nlLab=groundLabel('NEDERLAND',250,24);
+const seaLab=groundLabel('NORDSEE',190,22,.7);seaLab.material.map=textTex('NORDSEE',null,'#ffffff',1024,180,120);
+// ===== CITY =====
+const city=new THREE.CatmullRomCurve3([[250,0,11],[262,0,16],[276,0,13],[290,0,19],[304,0,14],[318,0,12],[328,0,8.5]].map(a=>new THREE.Vector3(...a)));
+(function(){const N=200,pos=[],idx=[];for(let i=0;i<=N;i++){const t=i/N,p=city.getPointAt(t),tg=city.getTangentAt(t),n=new THREE.Vector3(-tg.z,0,tg.x).normalize().multiplyScalar(1.3);pos.push(p.x+n.x,.07,p.z+n.z,p.x-n.x,.07,p.z-n.z);if(i<N){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xc9ced1,side:THREE.DoubleSide}));m.receiveShadow=true;S.add(m)})();
+const cols=[0xffffff,0xf6efe6,0xe9eef1,0xffe9e4];
+function bld(x,z,w,d,h){const c=M(cols[Math.floor(Math.random()*4)]);box(w,h,d,c,x,0,z);for(let y=1;y<h-.5;y+=1.4)for(let k=-w/2+.8;k<w/2-.4;k+=1.2){box(.6,.7,.05,mats.glass,x+k,y,z+d/2+.02)}box(w+.2,.25,d+.2,Math.random()<.3?mats.red:mats.grey,x,h,z)}
+[[262,2,5,5,7],[270,1,4,6,10],[280,3,6,5,6],[292,4,5,5,9],[300,1,4,4,5],[272,28,5,5,6],[284,30,6,5,8],[298,29,5,4,5],[310,30,4,5,7],[258,-6,5,5,12],[286,-7,6,6,14]].forEach(a=>bld(...a));
+// scooter
+const scoot=new THREE.Group();S.add(scoot);
+box(1.6,.35,.5,mats.red,0,.35,0,scoot);box(.25,1,.25,mats.dark,.7,.6,0,scoot);box(.9,.6,.5,mats.white,-.2,.7,0,scoot);
+[-.65,.65].forEach(x=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,10),mats.dark);w.rotation.x=Math.PI/2;w.position.set(x,.3,0);scoot.add(w)});
+cyl(.3,.35,.9,mats.red,-.2,1.3,0,scoot);const rh=new THREE.Mesh(new THREE.SphereGeometry(.3,10,8),mats.red);rh.position.set(-.2,2.5,0);scoot.add(rh);
+// ===== HOUSE =====
+const house=new THREE.Group();house.position.set(332,0,0);S.add(house);
+box(12,.25,9,M(0xece6dd),0,0,0,house);
+box(12,4,.35,mats.white,0,0,-4.5,house);box(.35,4,9,mats.white,-6,0,0,house);
+box(4.3,4,.35,mats.white,-3.85,0,4.5,house);box(5.7,4,.35,mats.white,3.15,0,4.5,house);box(2,1,.35,mats.white,-.7,3,4.5,house);// door gap x -1.7..0.3
+box(.35,4,9,mats.white,6,0,0,house);
+box(2.4,1.4,.1,mats.glass,3.2,1.6,4.7,house);box(.1,1.4,2.4,mats.glass,6.2,1.6,0,house);
+const doorPiv=new THREE.Group();doorPiv.position.set(-1.7,0,4.6);house.add(doorPiv);box(2,3,.15,mats.red,1,.25,0,doorPiv);
+const hroofM=new THREE.MeshStandardMaterial({color:0x4a4f57,roughness:.8,transparent:true,flatShading:true});
+const hroof=new THREE.Group();house.add(hroof);
+[1,-1].forEach(s=>{const r=new THREE.Mesh(new THREE.BoxGeometry(13,.3,6.2),hroofM);r.position.set(0,5.4,s*2.3);r.rotation.x=s*.55;r.castShadow=true;hroof.add(r)});
+const gableM=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true});
+// interior table
+cyl(1.4,1.4,.12,mats.wood,0,1.2,-.5,house,18);cyl(.15,.15,1.1,mats.dark,0,.25,-.5,house,6);[-2,2].forEach(d=>box(.8,1,.8,mats.wood,d,.25,-.5,house));
+box(3,.8,1.2,M(0x9fb7c9),-3.5,.25,-3.3,house);// sofa
+const plate2=plate.clone();plate2.position.set(0,1.32,-.5);plate2.scale.setScalar(.001);house.add(plate2);
+const steam=[];for(let i=0;i<9;i++){const s=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0}));house.add(s);steam.push(s)}
+// trees scatter
+const avoid=(x,z)=>{if(x>-10&&x<10&&z>-8&&z<9)return 1;for(let t=0;t<=1;t+=.01){const p=road.getPointAt(t);if((p.x-x)**2+(p.z-z)**2<16)return 1}if(x>104&&x<152&&z>-14&&z<12)return 1;if(x>150&&x<230)return 1;if(x>226&&x<342&&z>-12&&z<36){for(let t=0;t<=1;t+=.01){const p=city.getPointAt(t);if((p.x-x)**2+(p.z-z)**2<9)return 1}if(Math.random()<.85)return 1}return 0};
+let seed=7;Math.random=(()=>{return ()=>{seed=(seed*16807)%2147483647;return seed/2147483647}})();
+for(let i=0;i<620;i++){const x=-40+Math.random()*400,z=-45+Math.random()*95;if(!avoid(x,z))tree(x,z,.7+Math.random()*.6)}
+// ---------- STATE ----------
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));const k=(p,a,b)=>cl((p-a)/(b-a));const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const vanStart=road.getPointAt(0),vanEnd=road.getPointAt(1);
+const camT=V(0,0,0),camT2=V(0,0,0);let zoomS=22;
+let P=0,PS=0;
+function place(o,curve,t,yOff=0){const p=curve.getPointAt(cl(t,0,.999));const tg=curve.getTangentAt(cl(t,0,.999));o.position.set(p.x,yOff,p.z);o.rotation.y=Math.atan2(-tg.z,tg.x)}
+function update(p,time){
+ // step
+ let st=0;for(let i=0;i<6;i++)if(p>=B[i])st=i;setStep(st);document.getElementById('bar').style.width=(p*100)+'%';
+ // 1 roof
+ const rf=1-ease(k(p,.02,.1));roofM.opacity=rf;roofTop.material.opacity=rf;roof.visible=roofTop.visible=rf>.02;sign.position.y=4.45+(1-rf)*-.0;
+ chef.rotation.y=Math.sin(time*2)*.35;arm.rotation.x=Math.sin(time*6)*.4;
+ // 2 packing: plate shrinks into parcel
+ const pk=k(p,.16,.22);plate.scale.setScalar(Math.max(.001,1-ease(pk)));plate.position.y=1.55+pk*.3;
+ const ps=ease(k(p,.17,.21));
+ // van along road
+ const vt=ease(k(p,.27,.45));
+ let vp;if(p<.25){vp=0}else vp=vt;
+ place(van,road,vp);van.position.y=Math.abs(Math.sin(time*18))*.04*(vt>0&&vt<1?1:0);
+ if(p<.25){van.position.copy(vanStart);van.rotation.y=Math.atan2(-road.getTangentAt(0).z,road.getTangentAt(0).x)}
+ wpPins.forEach((d,i)=>{const on=vt>=WPT[i]-.02;d.material.color.set(on?0xffffff:0xffd2cb);d.scale.setScalar(on?2.2+Math.sin(time*4)*.1:1.6)});
+ // plane
+ const tax=k(p,.5,.56),fl=k(p,.56,.65),ld=k(p,.65,.68);
+ if(p<.56){plane.position.set(115+ease(tax)*31,1.9,6);plane.rotation.set(0,0,0)}
+ else if(p<.65){const t=ease(fl);const a=arc.getPointAt(t),b=arc.getPointAt(Math.min(1,t+.01));plane.position.copy(a);plane.rotation.set(Math.sin(t*Math.PI)*.12,0,Math.atan2(b.y-a.y,b.x-a.x))}
+ else{plane.position.set(236+ease(ld)*8,1.9,6);plane.rotation.set(0,0,0)}
+ gearG.visible=!(p>.575&&p<.635);
+ const showArc=k(p,.52,.56)*(1-k(p,.7,.74));dots.forEach((d,i)=>{d.material.opacity=showArc*(i/60<=(p<.56?1:ease(fl))+.001?1:.25);});
+ document.getElementById('chip').innerHTML=p<.6?'Route: <b>Deutschland</b> → Nederland':'Route: Deutschland → <b>Nederland</b>';
+ nlLab.material.color.set(p>.6?0xe8412c:0xffffff);
+ // scooter
+ const sc=ease(k(p,.7,.86));place(scoot,city,sc);if(p<.68)scoot.position.copy(city.getPointAt(0));
+ // house
+ const hr=1-ease(k(p,.86,.92));hroofM.opacity=hr;hroof.visible=hr>.02;
+ doorPiv.rotation.y=-ease(k(p,.85,.89))*1.6;
+ const serve=ease(k(p,.92,.97));plate2.scale.setScalar(Math.max(.001,serve));
+ steam.forEach((s,i)=>{const ph=(time*.6+i/9)%1;s.position.set(Math.sin(i*2+time)*.3,1.8+ph*2.4,-.5+Math.cos(i*3)*.25);s.material.opacity=serve*(1-ph)*.6;s.scale.setScalar(.6+ph*1.4)});
+ // parcel path
+ let pos=V(0,0,0),vis=true,rot=0;
+ if(p<.17){pos.set(.2,1.55,.6);vis=p>.15;parcel.scale.setScalar(Math.max(.001,ease(k(p,.15,.18))));}
+ else if(p<.25){parcel.scale.setScalar(1);const t=ease(k(p,.21,.25));pos.lerpVectors(V(.2,1.55,.6),V(vanStart.x-.3,2.6,vanStart.z),t);pos.y+=Math.sin(t*Math.PI)*2}
+ else if(p<.48){pos.copy(van.position).add(V(0,2.6,0).add(V(-.4,0,0).applyAxisAngle(V(0,1,0),van.rotation.y)));rot=van.rotation.y}
+ else if(p<.5){const t=ease(k(p,.48,.5));const a=van.position.clone().add(V(0,2.6,0));pos.lerpVectors(a,V(115,2.4,6),t);pos.y+=Math.sin(t*Math.PI)*2.5}
+ else if(p<.68){pos.copy(plane.position);vis=false}
+ else if(p<.7){const t=ease(k(p,.68,.7));pos.lerpVectors(V(244,1.9,6),city.getPointAt(0).add(V(0,1.7,0)),t);pos.y+=Math.sin(t*Math.PI)*2}
+ else if(p<.89){pos.copy(scoot.position).add(V(0,1.0,0));pos.add(V(-.2,0,0).applyAxisAngle(V(0,1,0),scoot.rotation.y));rot=scoot.rotation.y}
+ else{const t=ease(k(p,.89,.93));const end=V(332,1.4,-.5);pos.lerpVectors(scoot.position.clone().add(V(0,1,0)),end,t);pos.y+=Math.sin(t*Math.PI)*1.6;vis=p<.95;parcel.scale.setScalar(Math.max(.001,1-ease(k(p,.93,.95))))}
+ if(p>.25&&p<.93)parcel.scale.setScalar(.85);
+ parcel.position.copy(pos);parcel.rotation.y=rot;parcel.visible=vis;
+ lid.position.y=1.06+ (p>.9?ease(k(p,.91,.94))*.8:0);
+ // camera target: follow focal
+ let f;
+ if(p<.21)f=V(0,1,0);else if(p<.25)f=V(0,1,0).lerp(vanStart,ease(k(p,.21,.25)));
+ else if(p<.48)f=van.position.clone();else if(p<.52)f=V(van.position.x,0,van.position.z).lerp(V(118,0,4),ease(k(p,.48,.52)));
+ else if(p<.69)f=V(plane.position.x,plane.position.y*.6,plane.position.z);
+ else if(p<.86)f=scoot.position.clone();else f=V(332,1,0).lerp(V(332,1.5,-.5),k(p,.9,1));
+ if(p<.03) f=V(0,1,0);
+ camT.copy(f);
+ // zoom per stage (half-height of frustum)
+ const Z=[[0,10],[.12,9],[.2,8],[.26,15],[.45,16],[.52,17],[.6,26],[.66,18],[.72,13],[.86,10],[.95,8],[1,8.5]];
+ let z=Z[0][1];for(let i=0;i<Z.length-1;i++){if(p>=Z[i][0]&&p<=Z[i+1][0]){z=Z[i][1]+(Z[i+1][1]-Z[i][1])*ease(k(p,Z[i][0],Z[i+1][0]))}}
+ return z;
+}
+let first=true;const OFF=V(1,1.05,1).normalize().multiplyScalar(120);
+function resize(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);}
+addEventListener('resize',resize);resize();
+const clock=new THREE.Clock();
+function frame(){const time=clock.getElapsedTime();PS+=(P-PS)*.12;if(Math.abs(P-PS)<1e-5)PS=P;
+ const z=update(PS,time);
+ if(first){camT2.copy(camT);zoomS=z;first=false}camT2.lerp(camT,.12);zoomS+=(z-zoomS)*.12;
+ const w=innerWidth,h=innerHeight,asp=w/h,mob=w<820;
+ const hh=zoomS*(mob?1.2:1)*(asp<1?1/asp*.75:1);
+ // shift world right of panel on desktop
+ const shift=mob?0:Math.min(420,w*.34)/w*hh*asp;
+ cam.left=-hh*asp-shift;cam.right=hh*asp-shift;cam.top=hh-(mob?hh*.4:0);cam.bottom=-hh-(mob?hh*.4:0);cam.updateProjectionMatrix();
+ cam.position.copy(camT2).add(OFF);cam.lookAt(camT2);
+ sun.position.copy(camT2).add(V(30,60,20));sun.target.position.copy(camT2);
+ R.render(S,cam);requestAnimationFrame(frame)}
+// ---------- SCROLL ----------
+gsap.registerPlugin(ScrollTrigger);
+const lenis=new Lenis({lerp:.09});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0);
+ScrollTrigger.create({trigger:'#story',start:'top top',end:'bottom bottom',onUpdate:s=>{P=s.progress}});
+function go(p){const st=document.getElementById('story');lenis.scrollTo(p*(st.offsetHeight-innerHeight),{duration:1.6})}
+gsap.to('#photo img',{x:0,ease:'power3.out',scrollTrigger:{trigger:'#photo',start:'top 90%',end:'top 10%',scrub:true}});
+gsap.from('#photo .cap',{y:80,opacity:0,scrollTrigger:{trigger:'#photo',start:'top 40%',end:'top top',scrub:true}});
+gsap.to('#panel',{opacity:0,scrollTrigger:{trigger:'#photo',start:'top 60%',end:'top 20%',scrub:true}});
+window.__setP=v=>{P=PS=v};window.__getP=()=>PS;
+setStep(0);frame();
+</script></body></html>
